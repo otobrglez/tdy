@@ -1,0 +1,8 @@
+# Data
+.days/
+
+# Code
+/target
+.idea/
+*.iml
+.envrc
