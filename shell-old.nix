@@ -2,7 +2,7 @@ let
   pkgs = import <nixpkgs> {};
   rust-toolchain = pkgs.symlinkJoin {
     name = "rust-toolchain";
-    paths = [pkgs.rustfmt pkgs.rustc pkgs.cargo pkgs.rustPlatform.rustcSrc pkgs.clippy];
+    paths = [pkgs.rustfmt pkgs.rustc pkgs.cargo pkgs.rustPlatform.rustcSrc];
   };
 in with pkgs;
 

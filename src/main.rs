@@ -29,7 +29,7 @@ fn main() {
     let current_date = Utc::now();
     let world = DocumentWorld {
         namespace: "tdy".to_string(),
-        title: format!("{}", current_date.format("%Y-%m-%d").to_string()),
+        title: current_date.format("%Y-%m-%d").to_string(),
         date: current_date.format("%Y-%m-%d").to_string(),
         year: current_date.year(),
         month: current_date.month(),
@@ -38,7 +38,7 @@ fn main() {
 
     // Find or create existing file.
     let file_name: String = format!("{}-{}.md", world.namespace, world.date);
-    let seek_path = format!("{}/{}", files_folder.clone(), file_name.clone());
+    let seek_path = format!("{}/{}", files_folder, file_name);
     let working_file = std::path::Path::new(seek_path.as_str());
     let mut is_new_file: bool = false;
 
@@ -70,7 +70,7 @@ fn main() {
         // Save template to temp file
         let mut dir: PathBuf = temp_dir();
         dir.push(file_name);
-        let temp_file_name = format!("{}", dir.clone().to_str().unwrap());
+        let temp_file_name = dir.clone().to_str().unwrap().to_string();
         let mut file = File::create(dir).unwrap();
         file.write_all(content.as_bytes()).unwrap();
         temp_file_name
@@ -81,7 +81,7 @@ fn main() {
     // Open the editor
     let exit_status = std::process::Command::new(shell)
         .arg("-c")
-        .arg(format!("{} {}", editor, working_file_path).to_string())
+        .arg(format!("{} {}", editor, working_file_path))
         .spawn()
         .expect("Error: Failed spawning the editor.")
         .wait()
