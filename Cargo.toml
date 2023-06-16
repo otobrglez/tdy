@@ -6,6 +6,6 @@ authors = ["Oto Brglez <otobrglez@gmail.com>"]
 
 [dependencies]
 chrono = "0.4.26"
-clap = { version = "4.3.2", features = ["derive", "debug"] }
+clap = { version = "4.3.2", features = ["derive", "env"] }
 minijinja = "0.34.0"
 tempfile = "3.6.0"
