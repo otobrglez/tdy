@@ -27,9 +27,12 @@ mkShell {
   NIX_ENFORCE_PURITY = 0;
   RUST_BACKTRACE = "full";
   RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
-  #shellHook = ''
   #  export RUST_SRC_PATH=${pkgs.rustPlatform.rustcSrc}
-  #'';
+  
+  shellHook = ''
+    echo "Setting tdy alias."
+    alias tdy=./target/debug/tdy
+  '';
 
 }
 

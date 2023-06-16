@@ -17,7 +17,7 @@ struct TdyCli {
 
 #[derive(Subcommand, Debug)]
 enum Commands {
-    OpenCreate {
+    Open {
         #[arg(short, long, env, default_value = "tdy")]
         namespace: String,
         #[arg(short, default_value = "")]
@@ -50,7 +50,7 @@ fn parse_or_set_date(date: &str) -> Result<DateTime<Utc>, String> {
 
 fn main() {
     match TdyCli::parse().command {
-        Commands::OpenCreate {
+        Commands::Open {
             shell,
             editor,
             tdy_files,
