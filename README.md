@@ -39,6 +39,19 @@ Options:
 
 I use `tdy` for all my daily notes. I want it to be an easy, fast and non-invasive process. **Then smart.**
 
+
+## Default template
+
+If the file for the day does not yet exists, it will create a new file with the following markdown template (with the current date-time!):
+
+```markdown
+---
+date: 2023-06-17
+---
+# 2023-06-17
+```
+
+
 ## Development
 
 This is a Rust project. To compile it you need rust toolchain and then:
