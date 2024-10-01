@@ -20,8 +20,7 @@ pub fn execute(
     let (new_document, working_document_path) = match seek_path.exists() {
         false => create_temp_document(document).map(|p| (true, p)),
         _ => Ok((false, seek_path.clone())),
-    }
-    .expect("Failed creating working document.");
+    }.expect("Failed creating new working document.");
 
     open_document_with_editor(
         shell,

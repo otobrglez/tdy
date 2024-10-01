@@ -59,7 +59,7 @@ This is a Rust project. To compile it you need rust toolchain and then:
 ```bash
 cargo build
 cargo build --release
-./target/debug tdy
+./target/debug tdy open -n hacking
 ```
 
 ## Author

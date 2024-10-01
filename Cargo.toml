@@ -1,11 +1,11 @@
 [package]
 name = "tdy"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2021"
 authors = ["Oto Brglez <otobrglez@gmail.com>"]
 
 [dependencies]
-chrono = "0.4.26"
-clap = { version = "4.3.2", features = ["derive", "env"] }
+chrono = "0.4.38"
+clap = { version = "4.5.18", features = ["derive", "env"] }
 minijinja = "0.34.0"
-tempfile = "3.6.0"
+tempfile = "3.13.0"

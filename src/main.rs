@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use chrono::{DateTime, NaiveDate, Utc};
+use chrono::{DateTime, NaiveDate, TimeZone, Utc};
 use clap::{Parser, Subcommand};
 
 mod document;
@@ -45,7 +45,7 @@ fn parse_or_set_date(date: &str) -> Result<DateTime<Utc>, String> {
                 .and_hms_opt(0, 0, 0)
                 .ok_or_else(|| "Failed altering datetime.".to_string())
         })
-        .map(|naive_date| DateTime::<Utc>::from_utc(naive_date, Utc))
+        .map(|naive_date| Utc.from_utc_datetime(&naive_date))
 }
 
 fn main() {

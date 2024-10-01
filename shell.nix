@@ -11,7 +11,7 @@ mkShell {
   buildInputs = [
     libiconv
     openssl
-    pkgconfig
+    pkg-config
     rust-analyzer
     rust-toolchain
   ] ++ 
