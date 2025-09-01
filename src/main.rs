@@ -2,9 +2,7 @@ use std::path::PathBuf;
 
 use chrono::{DateTime, NaiveDate, TimeZone, Utc};
 use clap::{Parser, Subcommand};
-
-mod document;
-mod open_create;
+use tdy::open_create;
 
 #[derive(Parser)]
 #[command(author, version, about, name = "tdy", bin_name = "tdy")]

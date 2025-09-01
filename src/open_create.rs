@@ -20,7 +20,8 @@ pub fn execute(
     let (new_document, working_document_path) = match seek_path.exists() {
         false => create_temp_document(document).map(|p| (true, p)),
         _ => Ok((false, seek_path.clone())),
-    }.expect("Failed creating new working document.");
+    }
+    .expect("Failed creating new working document.");
 
     open_document_with_editor(
         shell,
@@ -48,7 +49,7 @@ fn create_temp_document(document: Document) -> Result<PathBuf, String> {
         .unwrap()
         .render(context!(
             namespace => document.namespace,
-            title => document.safe_title(),
+            title => document.title,
             year => document.date.format("%Y").to_string(),
             month => document.date.format("%m").to_string(),
             day => document.date.format("%d").to_string(),

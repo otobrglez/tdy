@@ -1,5 +1,4 @@
 use chrono::{DateTime, Utc};
-use std::ops::Not;
 
 #[derive(Debug)]
 pub struct Document {
@@ -9,15 +8,27 @@ pub struct Document {
 }
 
 impl Document {
+    fn namespace_or_default(namespace: String) -> String {
+        Some(namespace)
+            .filter(|s| !s.is_empty())
+            .unwrap_or_else(|| String::from("tdy"))
+    }
+
+    fn title_or_default(title: String) -> Option<String> {
+        Some(title)
+            .filter(|s| !s.is_empty())
+            .or_else(|| Some(Utc::now().format("%Y-%m-%d").to_string()))
+    }
+
+    fn date_or_default(date: Option<DateTime<Utc>>) -> DateTime<Utc> {
+        date.unwrap_or(Utc::now())
+    }
+
     pub fn from(namespace: String, title: String, date: Option<DateTime<Utc>>) -> Document {
         Document {
-            namespace: if namespace.is_empty() {
-                "tdy".to_string()
-            } else {
-                namespace
-            },
-            title: title.is_empty().not().then_some(title),
-            date: date.unwrap_or(Utc::now()),
+            namespace: Self::namespace_or_default(namespace),
+            title: Self::title_or_default(title),
+            date: Self::date_or_default(date),
         }
     }
 
@@ -25,9 +36,12 @@ impl Document {
         format!("{}-{}.md", self.namespace, self.date.format("%Y-%m-%d"))
     }
 
+    /*
     pub fn safe_title(&self) -> String {
         self.title
             .clone()
             .unwrap_or(self.date.format("%Y-%m-%d").to_string())
     }
+
+     */
 }
