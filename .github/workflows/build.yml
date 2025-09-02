@@ -11,10 +11,9 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v5
-    - run: cargo build --verbose
-    - run: cargo test --verbose
+      - uses: actions/checkout@v5
+      - run: cargo build --verbose
+      - run: cargo test --verbose

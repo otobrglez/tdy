@@ -31,6 +31,14 @@ enum Commands {
         #[arg(short, long)]
         query: String,
     },
+    Path {
+        #[arg(short, long, env, default_value = "tdy")]
+        namespace: String,
+        #[arg(short, long, value_parser = cli_date::parse_raw_date)]
+        date: Option<DateTime<Utc>>,
+        #[arg(long, env, default_value = ".days")]
+        tdy_files: PathBuf,
+    },
 }
 
 fn main() {
@@ -44,6 +52,13 @@ fn main() {
             date,
             title,
         } => open_create::execute(editor, tdy_files, namespace, date, title),
+        Commands::Path {
+            namespace,
+            date,
+            tdy_files,
+        } => {
+            open_create::resolve_path(tdy_files, namespace, date);
+        }
         cmd => todo!("Command {:?} is not yet implemented.", cmd),
     }
 }

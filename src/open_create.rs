@@ -14,6 +14,21 @@ const DEFAULT_TEMPLATE: &str = "---\n\
     ---\n\
     # {{ title }}\n";
 
+pub fn resolve_path(
+    tdy_files: PathBuf,
+    namespace: String,
+    date: Option<DateTime<Utc>>,
+) -> Option<PathBuf> {
+    let document = Document::new(namespace, None, date);
+    let seek_path: PathBuf = tdy_files.join(document.file_name());
+
+    if seek_path.exists() {
+        Some(seek_path)
+    } else {
+        None
+    }
+}
+
 pub fn execute(
     editor: String,
     tdy_files: PathBuf,
@@ -23,12 +38,12 @@ pub fn execute(
 ) {
     let document = Document::new(namespace, title, date);
     let seek_path: PathBuf = tdy_files.join(document.file_name());
+        
     let (new_document, working_document_path) = match seek_path.exists() {
         false => create_temp_document(document).map(|p| (true, p)),
         _ => Ok((false, seek_path.clone())),
     }
     .expect("Failed creating new working document.");
-
     open_document_with_editor(editor, new_document, seek_path, working_document_path);
 }
 
