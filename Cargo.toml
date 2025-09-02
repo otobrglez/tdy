@@ -1,7 +1,7 @@
 [package]
 name = "tdy"
 version = "0.0.3"
-edition = "2021"
+edition = "2024"
 authors = ["Oto Brglez <otobrglez@gmail.com>"]
 
 [dependencies]

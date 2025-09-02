@@ -14,8 +14,8 @@ impl Document {
             .unwrap_or_else(|| String::from("tdy"))
     }
 
-    fn title_or_default(title: String) -> Option<String> {
-        Some(title)
+    fn title_or_default(title: Option<String>) -> Option<String> {
+        title
             .filter(|s| !s.is_empty())
             .or_else(|| Some(Utc::now().format("%Y-%m-%d").to_string()))
     }
@@ -24,7 +24,7 @@ impl Document {
         date.unwrap_or(Utc::now())
     }
 
-    pub fn from(namespace: String, title: String, date: Option<DateTime<Utc>>) -> Document {
+    pub fn new(namespace: String, title: Option<String>, date: Option<DateTime<Utc>>) -> Document {
         Document {
             namespace: Self::namespace_or_default(namespace),
             title: Self::title_or_default(title),
@@ -35,13 +35,4 @@ impl Document {
     pub fn file_name(&self) -> String {
         format!("{}-{}.md", self.namespace, self.date.format("%Y-%m-%d"))
     }
-
-    /*
-    pub fn safe_title(&self) -> String {
-        self.title
-            .clone()
-            .unwrap_or(self.date.format("%Y-%m-%d").to_string())
-    }
-
-     */
 }
