@@ -1,10 +1,17 @@
 [package]
 name = "tdy"
-version = "0.0.3"
-edition = "2021"
+version = "0.0.4"
+edition = "2024"
 authors = ["Oto Brglez <otobrglez@gmail.com>"]
 
 [dependencies]
 chrono = "0.4.41"
 clap = { version = "4.5.46", features = ["derive", "env"] }
+env_logger = "0.11.8"
+log = "0.4.27"
 minijinja = "0.34.0"
+
+[profile.release]
+strip = "symbols"
+lto = "thin"
+codegen-units = 1
