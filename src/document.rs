@@ -1,6 +1,6 @@
+use crate::ext::DateFmtExt;
 use chrono::{DateTime, Utc};
 
-const DATE_FORMAT: &str = "%Y-%m-%d";
 const DEFAULT_NAMESPACE: &str = "tdy";
 
 #[derive(Debug)]
@@ -26,13 +26,10 @@ impl Document {
                 let is_empty = s.trim().is_empty();
                 if is_empty { None } else { Some(s) }
             })
-            .or_else(|| {
-                let date = maybe_date.unwrap_or_else(Utc::now);
-                Some(date.format(DATE_FORMAT).to_string())
-            })
+            .or_else(|| Some(maybe_date.unwrap_or_else(Utc::now).ymd()))
     }
 
-    fn date_or_default(date: Option<DateTime<Utc>>) -> DateTime<Utc> {
+    fn date_or_now(date: Option<DateTime<Utc>>) -> DateTime<Utc> {
         date.unwrap_or(Utc::now())
     }
 
@@ -40,11 +37,11 @@ impl Document {
         Document {
             namespace: Self::namespace_or_default(namespace),
             title: Self::title_or_default(title, date),
-            date: Self::date_or_default(date),
+            date: Self::date_or_now(date),
         }
     }
 
     pub fn file_name(&self) -> String {
-        format!("{}-{}.md", self.namespace, self.date.format(DATE_FORMAT))
+        format!("{}-{}.md", self.namespace, self.date.ymd())
     }
 }

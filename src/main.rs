@@ -34,6 +34,8 @@ enum Commands {
 }
 
 fn main() {
+    env_logger::init();
+
     match TdyCli::parse().command {
         Commands::Open {
             editor,

@@ -1,4 +1,4 @@
-use chrono::{DateTime, Datelike, Duration, NaiveDate, TimeZone, Utc, Weekday};
+use chrono::{DateTime, Datelike, Duration, NaiveDate, Utc, Weekday};
 
 const DATE_FORMAT: &str = "%Y-%m-%d";
 
@@ -56,5 +56,62 @@ fn parse_weekday_name(s: &str) -> Option<Weekday> {
         "sat" | "saturday" => Some(Weekday::Sat),
         "sun" | "sunday" => Some(Weekday::Sun),
         _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn assert_date(input: &str, expected_year: i32, expected_month: u32, expected_day: u32) {
+        let result = parse_raw_date(input).unwrap();
+        assert_eq!(result.year(), expected_year);
+        assert_eq!(result.month(), expected_month);
+        assert_eq!(result.day(), expected_day);
+    }
+
+    #[test]
+    fn test_absolute_date() {
+        assert_date("2025-12-31", 2025, 12, 31);
+    }
+
+    #[test]
+    fn test_relative_today() {
+        let today = Utc::now();
+        let result = parse_raw_date("today").unwrap();
+        assert_eq!(result.date_naive(), today.date_naive());
+    }
+
+    #[test]
+    fn test_relative_yesterday() {
+        let yesterday = Utc::now() - Duration::days(1);
+        let result = parse_raw_date("yesterday").unwrap();
+        assert_eq!(result.date_naive(), yesterday.date_naive());
+    }
+
+    #[test]
+    fn test_relative_tomorrow() {
+        let tomorrow = Utc::now() + Duration::days(1);
+        let result = parse_raw_date("tomorrow").unwrap();
+        assert_eq!(result.date_naive(), tomorrow.date_naive());
+    }
+
+    #[test]
+    fn test_last_weekday() {
+        assert!(parse_raw_date("last monday").is_ok());
+        assert!(parse_raw_date("last tuesday").is_ok());
+        assert!(parse_raw_date("last wednesday").is_ok());
+        assert!(parse_raw_date("last thursday").is_ok());
+        assert!(parse_raw_date("last friday").is_ok());
+        assert!(parse_raw_date("last saturday").is_ok());
+        assert!(parse_raw_date("last sunday").is_ok());
+    }
+
+    #[test]
+    fn test_invalid_date() {
+        assert!(parse_raw_date("").is_err());
+        assert!(parse_raw_date("invalid").is_err());
+        assert!(parse_raw_date("2024-13-01").is_err());
+        assert!(parse_raw_date("last invalid").is_err());
     }
 }
