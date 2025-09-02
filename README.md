@@ -66,6 +66,12 @@ Open or create a new document for **last friday** with namespace set to `work` a
 $ tdy open -n work -d "last friday" -t "Friday meeting report"
 ```
 
+The same works for next Monday.
+
+```bash
+$ tdy open -n work -d "next monday" -t "Monday planning."
+```
+
 ## Default template
 
 If the file for the day does not yet exist, it will create a new file with the following Markdown template (with the

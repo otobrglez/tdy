@@ -40,6 +40,17 @@ pub fn parse_raw_date(raw_date: &str) -> Result<DateTime<Utc>, String> {
             let d = today - Duration::days(delta);
             return Ok(to_midnight_utc(&d)?.and_utc());
         }
+        ["next", rest] if parse_weekday_name(rest).is_some() => {
+            let target_wd = parse_weekday_name(rest).unwrap();
+            let current = today.weekday() as i64;
+            let target = target_wd as i64;
+            let mut delta = (target - current) % 7;
+            if delta <= 0 {
+                delta += 7;
+            }
+            let d = today + Duration::days(delta);
+            return Ok(to_midnight_utc(&d)?.and_utc());
+        }
         _ => {}
     }
 
@@ -105,6 +116,17 @@ mod tests {
         assert!(parse_raw_date("last friday").is_ok());
         assert!(parse_raw_date("last saturday").is_ok());
         assert!(parse_raw_date("last sunday").is_ok());
+    }
+
+    #[test]
+    fn test_next_weekday() {
+        assert!(parse_raw_date("next monday").is_ok());
+        assert!(parse_raw_date("next tuesday").is_ok());
+        assert!(parse_raw_date("next wednesday").is_ok());
+        assert!(parse_raw_date("next thursday").is_ok());
+        assert!(parse_raw_date("next friday").is_ok());
+        assert!(parse_raw_date("next saturday").is_ok());
+        assert!(parse_raw_date("next sunday").is_ok());
     }
 
     #[test]
