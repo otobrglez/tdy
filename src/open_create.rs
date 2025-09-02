@@ -38,7 +38,7 @@ pub fn execute(
 ) {
     let document = Document::new(namespace, title, date);
     let seek_path: PathBuf = tdy_files.join(document.file_name());
-        
+
     let (new_document, working_document_path) = match seek_path.exists() {
         false => create_temp_document(document).map(|p| (true, p)),
         _ => Ok((false, seek_path.clone())),
@@ -50,7 +50,7 @@ pub fn execute(
 fn create_temp_document(document: Document) -> Result<PathBuf, String> {
     let mut template_environment = MinininjaEnvironment::new();
     template_environment
-        .add_template("today", DEFAULT_TEMPLATE)
+        .add_template("tdy.md", DEFAULT_TEMPLATE)
         .unwrap();
 
     info!(

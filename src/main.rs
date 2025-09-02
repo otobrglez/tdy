@@ -57,7 +57,9 @@ fn main() {
             date,
             tdy_files,
         } => {
-            open_create::resolve_path(tdy_files, namespace, date);
+            if let Some(path) = open_create::resolve_path(tdy_files, namespace, date) {
+                println!("{}", path.display());
+            }
         }
         cmd => todo!("Command {:?} is not yet implemented.", cmd),
     }
