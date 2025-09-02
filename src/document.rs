@@ -1,6 +1,7 @@
 use chrono::{DateTime, Utc};
 
 const DATE_FORMAT: &str = "%Y-%m-%d";
+const DEFAULT_NAMESPACE: &str = "tdy";
 
 #[derive(Debug)]
 pub struct Document {
@@ -13,7 +14,7 @@ impl Document {
     fn namespace_or_default(namespace: String) -> String {
         Some(namespace)
             .filter(|s| !s.is_empty())
-            .unwrap_or_else(|| String::from("tdy"))
+            .unwrap_or_else(|| String::from(DEFAULT_NAMESPACE))
     }
 
     fn title_or_default(
