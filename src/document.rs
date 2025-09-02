@@ -1,5 +1,7 @@
 use chrono::{DateTime, Utc};
 
+const DATE_FORMAT: &str = "%Y-%m-%d";
+
 #[derive(Debug)]
 pub struct Document {
     pub namespace: String,
@@ -14,10 +16,19 @@ impl Document {
             .unwrap_or_else(|| String::from("tdy"))
     }
 
-    fn title_or_default(title: Option<String>) -> Option<String> {
+    fn title_or_default(
+        title: Option<String>,
+        maybe_date: Option<DateTime<Utc>>,
+    ) -> Option<String> {
         title
-            .filter(|s| !s.is_empty())
-            .or_else(|| Some(Utc::now().format("%Y-%m-%d").to_string()))
+            .and_then(|s| {
+                let is_empty = s.trim().is_empty();
+                if is_empty { None } else { Some(s) }
+            })
+            .or_else(|| {
+                let date = maybe_date.unwrap_or_else(Utc::now);
+                Some(date.format(DATE_FORMAT).to_string())
+            })
     }
 
     fn date_or_default(date: Option<DateTime<Utc>>) -> DateTime<Utc> {
@@ -27,12 +38,12 @@ impl Document {
     pub fn new(namespace: String, title: Option<String>, date: Option<DateTime<Utc>>) -> Document {
         Document {
             namespace: Self::namespace_or_default(namespace),
-            title: Self::title_or_default(title),
+            title: Self::title_or_default(title, date),
             date: Self::date_or_default(date),
         }
     }
 
     pub fn file_name(&self) -> String {
-        format!("{}-{}.md", self.namespace, self.date.format("%Y-%m-%d"))
+        format!("{}-{}.md", self.namespace, self.date.format(DATE_FORMAT))
     }
 }

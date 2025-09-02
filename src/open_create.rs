@@ -22,13 +22,7 @@ pub fn execute(
     }
     .expect("Failed creating new working document.");
 
-    open_document_with_editor(
-        // shell,
-        editor,
-        new_document,
-        seek_path,
-        working_document_path,
-    );
+    open_document_with_editor(editor, new_document, seek_path, working_document_path);
 }
 
 fn create_temp_document(document: Document) -> Result<PathBuf, String> {
@@ -42,6 +36,8 @@ fn create_temp_document(document: Document) -> Result<PathBuf, String> {
     template_environment
         .add_template("today", default_template)
         .unwrap();
+
+    println!("DATE {:?} title {:?}", document.date, document.title);
 
     let temp_content = template_environment
         .get_template("today")
