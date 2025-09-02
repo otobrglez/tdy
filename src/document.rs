@@ -11,6 +11,14 @@ pub struct Document {
 }
 
 impl Document {
+    pub fn new(namespace: String, title: Option<String>, date: Option<DateTime<Utc>>) -> Document {
+        Document {
+            namespace: Self::namespace_or_default(namespace),
+            title: Self::title_or_default(title, date),
+            date: Self::date_or_now(date),
+        }
+    }
+
     fn namespace_or_default(namespace: String) -> String {
         Some(namespace)
             .filter(|s| !s.is_empty())
@@ -31,14 +39,6 @@ impl Document {
 
     fn date_or_now(date: Option<DateTime<Utc>>) -> DateTime<Utc> {
         date.unwrap_or(Utc::now())
-    }
-
-    pub fn new(namespace: String, title: Option<String>, date: Option<DateTime<Utc>>) -> Document {
-        Document {
-            namespace: Self::namespace_or_default(namespace),
-            title: Self::title_or_default(title, date),
-            date: Self::date_or_now(date),
-        }
     }
 
     pub fn file_name(&self) -> String {
