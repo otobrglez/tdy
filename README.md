@@ -5,11 +5,11 @@
 ## Rules
 
 1. One day, one file.
-2. I want to use my `$EDITOR` for writing notes.
-3. I want to write everything as [markdown](https://www.markdownguide.org/).
-5. There should be `namespaces` for multiple projects in a person's life.
-6. **simple**, **quick**, and non-invasive. **Then smart.**
-7. Cloud-ready but optional!
+2. Respect and use `$EDITOR` for writing notes.
+3. Use [Markdown](https://www.markdownguide.org/).
+5. Use `namespaces` for multiple projects in a person's life.
+6. **Simple**, **quick**, and non-invasive. **Then smart.**
+7. Cloud-ready and cloud-optional!
 
 ## Usage
 
