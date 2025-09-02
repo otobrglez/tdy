@@ -1,6 +1,6 @@
 # `tdy` - a very opinionated day tracker
 
-`tdy` is a tool for writing and organizing daily notes.
+`tdy` is a tool for writing and organising daily notes.
 
 ## Rules
 
@@ -8,6 +8,8 @@
 2. I want to use my `$EDITOR` for writing notes.
 3. I want to write everything as [markdown](https://www.markdownguide.org/).
 5. There should be `namespaces` for multiple projects in a person's life.
+6. **simple**, **quick**, and non-invasive. **Then smart.**
+7. Cloud-ready but optional!
 
 ## Usage
 
@@ -15,29 +17,50 @@
 tdy open
 ```
 
-**That's it.** Behind the scenes `tdy` creates a new markdown document in a temporary folder with a simple pre-defined template. Boots up your favourite text editor and waits for it to finish. After the editor is closed, it stores the file in your file system's `$TDY_FILES` (`.tdy` - by default) folder.
+**That's it.** Behind the scenes, `tdy` creates a new [markdown](https://en.wikipedia.org/wiki/Markdown) document in a temporary folder with a simple pre-defined template. Boot up your favourite text editor and wait for you to finish. After the editor is closed, it stores the file in your file system's `$TDY_FILES` (`.tdy` - by default) folder.
 
 `tdy` names files with the following template `<namespace>-<year>-<month>-<date>.md`.
 
 `tdy` respects your `ENV` and reads `EDITOR`, `TDY_FILES`, and `SHELL` respectfully.
 
 ```
-Usage: tdy open [OPTIONS] --editor <EDITOR> --shell <SHELL>
+Usage: tdy open [OPTIONS] --editor <EDITOR>
 
 Options:
   -n, --namespace <NAMESPACE>  [env: NAMESPACE=] [default: tdy]
-  -t <TITLE>                   [default: ]
+  -t, --title <TITLE>
   -d, --date <DATE>
-      --tdy-files <TDY_FILES>  [env: TDY_FILES=] [default: .days]
-      --editor <EDITOR>        [env: EDITOR=vim]
-      --shell <SHELL>          [env: SHELL=/bin/zsh]
+      --tdy-files <TDY_FILES>  [env: TDY_FILES=.days/] [default: .days]
+      --editor <EDITOR>        [env: EDITOR=nvim]
   -h, --help                   Print help
   -V, --version                Print version
 ```
 
-## Mission
+### Examples
 
-I use `tdy` for all my daily notes. I want it to be an easy, fast and non-invasive process. **Then smart.**
+Opens a new document for **today**. The file will have a name similar to `tdy-2025-09-02.md`. If the file does not exist, it will be created beforehand; otherwise, the existing file is opened for editing in your editor. The file is stored in the `./days` folder unless overwritten by `TDY_FILES` or by setting the flag `--tdy-files`.
+
+```bash
+$ tdy open
+```
+
+Open or create a new document for **today** with the `namespace` set to `work`.
+
+```bash
+$ tdy open -n work
+```
+
+Open or create a new document for **yesterday** with namespace set to `work`.
+
+```bash
+$ tdy open -n work -d yesterday
+```
+
+Open or create a new document for **last friday** with namespace set to `work`.
+
+```bash
+$ tdy open -n work -d "last friday"
+```
 
 
 ## Default template
