@@ -17,7 +17,9 @@
 tdy open
 ```
 
-**That's it.** Behind the scenes, `tdy` creates a new [markdown](https://en.wikipedia.org/wiki/Markdown) document in a temporary folder with a simple pre-defined template. Boot up your favourite text editor and wait for you to finish. After the editor is closed, it stores the file in your file system's `$TDY_FILES` (`.tdy` - by default) folder.
+**That's it.** Behind the scenes, `tdy` creates a new [markdown](https://en.wikipedia.org/wiki/Markdown) document in a
+temporary folder with a simple pre-defined template. Boot up your favourite text editor and wait for you to finish.
+After the editor is closed, it stores the file in your file system's `$TDY_FILES` (`.tdy` - by default) folder.
 
 `tdy` names files with the following template `<namespace>-<year>-<month>-<date>.md`.
 
@@ -38,7 +40,9 @@ Options:
 
 ### Examples
 
-Opens a new document for **today**. The file will have a name similar to `tdy-2025-09-02.md`. If the file does not exist, it will be created beforehand; otherwise, the existing file is opened for editing in your editor. The file is stored in the `./days` folder unless overwritten by `TDY_FILES` or by setting the flag `--tdy-files`.
+Opens a new document for **today**. The file will have a name similar to `tdy-2025-09-02.md`. If the file does not
+exist, it will be created beforehand; otherwise, the existing file is opened for editing in your editor. The file is
+stored in the `./days` folder unless overwritten by `TDY_FILES` or by setting the flag `--tdy-files`.
 
 ```bash
 $ tdy open
@@ -56,24 +60,24 @@ Open or create a new document for **yesterday** with namespace set to `work`.
 $ tdy open -n work -d yesterday
 ```
 
-Open or create a new document for **last friday** with namespace set to `work`.
+Open or create a new document for **last friday** with namespace set to `work` and title set to `Friday meeting report`.
 
 ```bash
-$ tdy open -n work -d "last friday"
+$ tdy open -n work -d "last friday" -t "Friday meeting report"
 ```
-
 
 ## Default template
 
-If the file for the day does not yet exists, it will create a new file with the following markdown template (with the current date-time!):
+If the file for the day does not yet exist, it will create a new file with the following Markdown template (with the
+current date-time!):
 
 ```markdown
 ---
 date: 2023-06-17
 ---
+
 # 2023-06-17
 ```
-
 
 ## Development
 
