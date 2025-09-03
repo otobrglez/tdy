@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use chrono::{DateTime, Utc};
 use clap::{Parser, Subcommand};
-use tdy::{cli_date, open_create};
+use tdy::{cli_date, open_create, search::Engine};
 
 #[derive(Parser)]
 #[command(author, version, about, name = "tdy", bin_name = "tdy")]
@@ -27,10 +27,6 @@ enum Commands {
         #[arg(long, env)]
         editor: String,
     },
-    Find {
-        #[arg(short, long)]
-        query: String,
-    },
     Path {
         #[arg(short, long, env, default_value = "tdy")]
         namespace: String,
@@ -38,6 +34,16 @@ enum Commands {
         date: Option<DateTime<Utc>>,
         #[arg(long, env, default_value = ".days")]
         tdy_files: PathBuf,
+    },
+    Index {
+        #[arg(long, env, default_value = ".days")]
+        tdy_files: PathBuf,
+    },
+    Search {
+        #[arg(long, env, default_value = ".days")]
+        tdy_files: PathBuf,
+        #[arg(short, long)]
+        query: String,
     },
 }
 
@@ -61,6 +67,13 @@ fn main() {
                 println!("{}", path.display());
             }
         }
-        cmd => todo!("Command {:?} is not yet implemented.", cmd),
+        Commands::Index { tdy_files } => {
+            let _engine = Engine::new(tdy_files).index();
+            println!("Indexing.");
+        }
+        Commands::Search { tdy_files, query } => {
+            let _engine = Engine::new(tdy_files).search(query.clone());
+            println!("Search.");
+        }
     }
 }

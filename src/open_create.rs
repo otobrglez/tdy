@@ -9,6 +9,7 @@ use std::io::Write;
 use std::path::PathBuf;
 use std::process::Command;
 
+const DEFAULT_TEMPLATE_NAME: &str = "tdy.md";
 const DEFAULT_TEMPLATE: &str = "---\n\
     date: {{ date }}\n\
     ---\n\
@@ -50,7 +51,7 @@ pub fn execute(
 fn create_temp_document(document: Document) -> Result<PathBuf, String> {
     let mut template_environment = MinininjaEnvironment::new();
     template_environment
-        .add_template("tdy.md", DEFAULT_TEMPLATE)
+        .add_template(DEFAULT_TEMPLATE_NAME, DEFAULT_TEMPLATE)
         .unwrap();
 
     info!(
@@ -59,7 +60,7 @@ fn create_temp_document(document: Document) -> Result<PathBuf, String> {
     );
 
     let temp_content = template_environment
-        .get_template("tdy.md")
+        .get_template(DEFAULT_TEMPLATE_NAME)
         .unwrap()
         .render(context!(
             namespace => document.namespace,

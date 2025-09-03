@@ -11,11 +11,15 @@ pub struct Document {
 }
 
 impl Document {
-    pub fn new(namespace: String, title: Option<String>, date: Option<DateTime<Utc>>) -> Document {
+    pub fn new(
+        namespace: String,
+        title: Option<String>,
+        maybe_date: Option<DateTime<Utc>>,
+    ) -> Document {
         Document {
             namespace: Self::namespace_or_default(namespace),
-            title: Self::title_or_default(title, date),
-            date: Self::date_or_now(date),
+            title: Self::title_or_default(title, maybe_date),
+            date: Self::date_or_now(maybe_date),
         }
     }
 
@@ -30,10 +34,7 @@ impl Document {
         maybe_date: Option<DateTime<Utc>>,
     ) -> Option<String> {
         title
-            .and_then(|s| {
-                let is_empty = s.trim().is_empty();
-                if is_empty { None } else { Some(s) }
-            })
+            .and_then(|s| if s.trim().is_empty() { None } else { Some(s) })
             .or_else(|| Some(maybe_date.unwrap_or_else(Utc::now).ymd()))
     }
 

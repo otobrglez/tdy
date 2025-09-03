@@ -5,11 +5,11 @@
 ## Rules
 
 1. One day, one file.
-2. Respect and use `$EDITOR` for writing notes.
-3. Use [Markdown](https://www.markdownguide.org/).
-5. Use `namespaces` for multiple projects in a person's life.
-6. **Simple**, **quick**, and non-invasive. **Then smart.**
-7. Cloud-ready and cloud-optional!
+2. Respect and use `$EDITOR`.
+3. Use `namespaces` for multiple projects in a person's life.
+4. Quick, and non-invasive. **Then smart.**
+5. Cloud-ready and cloud-optional!
+6. Use [Markdown](https://www.markdownguide.org/).
 
 ## Usage
 
@@ -17,7 +17,7 @@
 tdy open
 ```
 
-**That's it.** Behind the scenes, `tdy` creates a new [markdown](https://en.wikipedia.org/wiki/Markdown) document in a
+**That's it.** Behind the scenes, `tdy` creates a new [Markdown](https://en.wikipedia.org/wiki/Markdown) document in a
 temporary folder with a simple pre-defined template. Boot up your favourite text editor and wait for you to finish.
 After the editor is closed, it stores the file in your file system's `$TDY_FILES` (`.tdy` - by default) folder.
 
