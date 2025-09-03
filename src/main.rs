@@ -68,7 +68,7 @@ fn main() {
             }
         }
         Commands::Index { tdy_files } => {
-            let _engine = Engine::new(tdy_files).index();
+            let _engine = Engine::new(tdy_files).index().unwrap();
             println!("Indexing.");
         }
         Commands::Search { tdy_files, query } => {
