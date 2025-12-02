@@ -10,7 +10,7 @@
 
     pkgs.noto-fonts
     pkgs.noto-fonts-cjk-sans
-    pkgs.noto-fonts-emoji
+    # pkgs.noto-fonts-emoji
     pkgs.liberation_ttf
     pkgs.fira-code
     pkgs.fira-code-symbols
