@@ -8,6 +8,22 @@
     pkgs.git
     pkgs.pandoc
 
+    pkgs.noto-fonts
+    pkgs.noto-fonts-cjk-sans
+    pkgs.noto-fonts-emoji
+    pkgs.liberation_ttf
+    pkgs.fira-code
+    pkgs.fira-code-symbols
+    pkgs.mplus-outline-fonts.githubRelease
+    pkgs.dina-font
+    pkgs.proggyfonts
+    pkgs.dejavu_fonts
+
+    #    pkgs.fonts-noto
+    #pkgs.fonts-noto-emoji
+    #pkgs.fonts-noto-color-emoji
+    #pkgs.fonts-dejavu
+
     # https://github.com/Ptival/config/blob/bd89aed366de07c8ec683b8aefbd84cc21312519/nixos/nixpkgs/texlive.nix#L34
     (pkgs.texlive.combine {
       inherit (pkgs.texlive) scheme-small soul dejavu
@@ -16,6 +32,7 @@
       newunicodechar etoc framed capt-of wrapfig needspace dejavu-otf helvetic upquote
       xcolor xifthen ifmtarg datetime extsizes memorygraphs currvita cbfonts xetex xstring
       inconsolata lato latexmk lm lualatex-math xurl twemojis
+      luatex luatex85 luatexbase fontspec graphics stix
       ;
     })
   ];
