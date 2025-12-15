@@ -17,17 +17,17 @@ monofont=$font
 
 pandoc $from_file \
     --pdf-engine=xelatex \
-		-V geometry:a4paper,margin=2cm \
+    --variable geometry:a4paper,margin=2cm \
     --variable mainfont="$mainfont" \
     --variable sansfont="$sansfont" \
     --variable monofont="$monofont" \
     --variable mathfont="STIX Two Math" \
-    -V mainfontoptions="FallbackFonts={Noto Color Emoji,Noto Emoji,DejaVu Sans,Symbola}" \
-    -V sansfontoptions="FallbackFonts={Noto Color Emoji,Noto Emoji,DejaVu Sans,Symbola}" \
-    -V monofontoptions="FallbackFonts={Noto Color Emoji,Noto Emoji,DejaVu Sans,Symbola}" \
-		--variable fontsize=10pt \
-		--variable version=2.0 \
-		-o $to_file
+    --variable mainfontoptions="FallbackFonts={Noto Color Emoji,Noto Emoji,DejaVu Sans,Symbola}" \
+    --variable sansfontoptions="FallbackFonts={Noto Color Emoji,Noto Emoji,DejaVu Sans,Symbola}" \
+    --variable monofontoptions="FallbackFonts={Noto Color Emoji,Noto Emoji,DejaVu Sans,Symbola}" \
+    --variable fontsize=10pt \
+    --variable version=2.0 \
+    -o $to_file
 
 # pandoc $from_file \
 #   --pdf-engine=lualatex \

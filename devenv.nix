@@ -5,24 +5,17 @@
   env.RUST_BACKTRACE = "full";
 
   packages = [ 
-    pkgs.git
-    pkgs.pandoc
-
-    pkgs.noto-fonts
-    pkgs.noto-fonts-cjk-sans
-    # pkgs.noto-fonts-emoji
-    pkgs.liberation_ttf
+    pkgs.dejavu_fonts
+    pkgs.dina-font
     pkgs.fira-code
     pkgs.fira-code-symbols
+    pkgs.git
+    pkgs.liberation_ttf
     pkgs.mplus-outline-fonts.githubRelease
-    pkgs.dina-font
+    pkgs.noto-fonts
+    pkgs.noto-fonts-cjk-sans
+    pkgs.pandoc
     pkgs.proggyfonts
-    pkgs.dejavu_fonts
-
-    #    pkgs.fonts-noto
-    #pkgs.fonts-noto-emoji
-    #pkgs.fonts-noto-color-emoji
-    #pkgs.fonts-dejavu
 
     # https://github.com/Ptival/config/blob/bd89aed366de07c8ec683b8aefbd84cc21312519/nixos/nixpkgs/texlive.nix#L34
     (pkgs.texlive.combine {
@@ -40,7 +33,7 @@
   languages.rust = {
     enable = true;
     channel = "stable";
-    version = "1.89.0";
+    version = "1.91.1";
   };
 
   enterShell = ''
@@ -51,6 +44,6 @@
   '';
 
   enterTest = ''
-    echo "Running tests"
+    cargo test -- --nocapture
   '';
 }
