@@ -1,8 +1,6 @@
 use crate::ext::DateFmtExt;
 use chrono::{DateTime, Utc};
 
-const DEFAULT_NAMESPACE: &str = "tdy";
-
 #[derive(Debug)]
 pub struct Document {
     pub namespace: String,
@@ -11,6 +9,8 @@ pub struct Document {
 }
 
 impl Document {
+    const DEFAULT_NAMESPACE: &str = "tdy";
+
     pub fn new(
         namespace: String,
         title: Option<String>,
@@ -26,7 +26,7 @@ impl Document {
     fn namespace_or_default(namespace: String) -> String {
         Some(namespace)
             .filter(|s| !s.is_empty())
-            .unwrap_or_else(|| String::from(DEFAULT_NAMESPACE))
+            .unwrap_or_else(|| String::from(Self::DEFAULT_NAMESPACE))
     }
 
     fn title_or_default(

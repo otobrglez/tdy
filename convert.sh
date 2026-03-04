@@ -10,7 +10,7 @@ font_2="Menlo"
 font_3="Helvetica"
 font_4="Noto Sans"
 
-font=$font_4
+font=$font_0
 mainfont=$font
 sansfont=$font
 monofont=$font
@@ -18,6 +18,7 @@ monofont=$font
 pandoc $from_file \
     --pdf-engine=xelatex \
     --variable geometry:a4paper,margin=2cm \
+    -V papersize:a4 \
     --variable mainfont="$mainfont" \
     --variable sansfont="$sansfont" \
     --variable monofont="$monofont" \
@@ -25,7 +26,7 @@ pandoc $from_file \
     --variable mainfontoptions="FallbackFonts={Noto Color Emoji,Noto Emoji,DejaVu Sans,Symbola}" \
     --variable sansfontoptions="FallbackFonts={Noto Color Emoji,Noto Emoji,DejaVu Sans,Symbola}" \
     --variable monofontoptions="FallbackFonts={Noto Color Emoji,Noto Emoji,DejaVu Sans,Symbola}" \
-    --variable fontsize=10pt \
+    --variable fontsize=9pt \
     --variable version=2.0 \
     -o $to_file
 

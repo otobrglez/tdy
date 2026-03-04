@@ -1,6 +1,7 @@
 { pkgs, lib, config, inputs, ... }:
 
 {
+  name = "tdy";
   env.NIX_ENFORCE_PURITY = 0;
   env.RUST_BACKTRACE = "full";
 

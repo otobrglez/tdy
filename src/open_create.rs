@@ -22,12 +22,7 @@ pub fn resolve_path(
 ) -> Option<PathBuf> {
     let document = Document::new(namespace, None, date);
     let seek_path: PathBuf = tdy_files.join(document.file_name());
-
-    if seek_path.exists() {
-        Some(seek_path)
-    } else {
-        None
-    }
+    seek_path.try_exists().map(|_| seek_path).ok()
 }
 
 pub fn execute(

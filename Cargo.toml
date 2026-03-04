@@ -1,16 +1,15 @@
 [package]
 name = "tdy"
-version = "0.0.4"
+version = "0.0.6"
 edition = "2024"
 authors = ["Oto Brglez <otobrglez@gmail.com>"]
 
 [dependencies]
-chrono = "0.4.41"
-clap = { version = "4.5.46", features = ["derive", "env"] }
-env_logger = "0.11.8"
-log = "0.4.27"
+chrono = "0.4.44"
+clap = { version = "4.5.60", features = ["derive", "env"] }
+env_logger = "0.11.9"
+log = "0.4.29"
 minijinja = "0.34.0"
-rusqlite = { version = "0.37.0", features = ["bundled"] }
 
 # [profile.release]
 # strip = "symbols"

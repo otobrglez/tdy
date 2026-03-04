@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use chrono::{DateTime, Utc};
 use clap::{Parser, Subcommand};
-use tdy::{cli_date, open_create, search::Engine};
+use tdy::{cli_date, open_create};
 
 #[derive(Parser)]
 #[command(author, version, about, name = "tdy", bin_name = "tdy")]
@@ -34,17 +34,7 @@ enum Commands {
         date: Option<DateTime<Utc>>,
         #[arg(long, env, default_value = ".days")]
         tdy_files: PathBuf,
-    },
-    Index {
-        #[arg(long, env, default_value = ".days")]
-        tdy_files: PathBuf,
-    },
-    Search {
-        #[arg(long, env, default_value = ".days")]
-        tdy_files: PathBuf,
-        #[arg(short, long)]
-        query: String,
-    },
+    }
 }
 
 fn main() {
@@ -66,14 +56,6 @@ fn main() {
             if let Some(path) = open_create::resolve_path(tdy_files, namespace, date) {
                 println!("{}", path.display());
             }
-        }
-        Commands::Index { tdy_files } => {
-            let _engine = Engine::new(tdy_files).index().unwrap();
-            println!("Indexing.");
-        }
-        Commands::Search { tdy_files, query } => {
-            let _engine = Engine::new(tdy_files).search(query.clone());
-            println!("Search.");
         }
     }
 }
