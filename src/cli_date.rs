@@ -1,60 +1,70 @@
+use crate::constants::DATE_FORMAT;
 use chrono::{DateTime, Datelike, Duration, NaiveDate, Utc, Weekday};
 
-const DATE_FORMAT: &str = "%Y-%m-%d";
+enum DateOffset {
+    Last,
+    Next,
+}
 
 pub fn parse_raw_date(raw_date: &str) -> Result<DateTime<Utc>, String> {
-    // Absolute
     if let Ok(date) = NaiveDate::parse_from_str(raw_date, DATE_FORMAT) {
-        return date
-            .and_hms_opt(0, 0, 0)
-            .ok_or_else(|| String::from("Failed altering date time"))
-            .map(|naive_date| naive_date.and_utc());
+        return to_midnight_utc(&date);
     }
 
-    // Relative
     let s = raw_date.trim().to_lowercase();
     let today = Utc::now().date_naive();
 
-    let to_midnight_utc = |date: &NaiveDate| {
-        date.and_hms_opt(0, 0, 0)
-            .ok_or_else(|| "Failed altering datetime.".to_string())
-    };
-
     match s.as_str() {
-        "today" => return Ok(to_midnight_utc(&today)?.and_utc()),
-        "yesterday" => return Ok(to_midnight_utc(&(today - Duration::days(1)))?.and_utc()),
-        "tomorrow" => return Ok(to_midnight_utc(&(today + Duration::days(1)))?.and_utc()),
+        "today" => return to_midnight_utc(&today),
+        "yesterday" => return to_midnight_utc(&(today - Duration::days(1))),
+        "tomorrow" => return to_midnight_utc(&(today + Duration::days(1))),
         _ => {}
     }
 
     let parts: Vec<_> = s.split_whitespace().collect();
     match parts.as_slice() {
-        ["last", rest] if parse_weekday_name(rest).is_some() => {
-            let target_wd = parse_weekday_name(rest).unwrap();
-            let current = today.weekday() as i64;
-            let target = target_wd as i64;
-            let mut delta = (current - target) % 7;
-            if delta <= 0 {
-                delta += 7;
-            }
-            let d = today - Duration::days(delta);
-            return Ok(to_midnight_utc(&d)?.and_utc());
+        ["last", weekday] if parse_weekday_name(weekday).is_some() => {
+            let target = parse_weekday_name(weekday).unwrap();
+            let date = calculate_weekday_offset(target, DateOffset::Last, today);
+            to_midnight_utc(&date)
         }
-        ["next", rest] if parse_weekday_name(rest).is_some() => {
-            let target_wd = parse_weekday_name(rest).unwrap();
-            let current = today.weekday() as i64;
-            let target = target_wd as i64;
-            let mut delta = (target - current) % 7;
-            if delta <= 0 {
-                delta += 7;
-            }
-            let d = today + Duration::days(delta);
-            return Ok(to_midnight_utc(&d)?.and_utc());
+        ["next", weekday] if parse_weekday_name(weekday).is_some() => {
+            let target = parse_weekday_name(weekday).unwrap();
+            let date = calculate_weekday_offset(target, DateOffset::Next, today);
+            to_midnight_utc(&date)
         }
-        _ => {}
+        _ => Err(format!("Failed parsing date from \"{}\"", raw_date)),
     }
+}
 
-    Err(format!("Failed parsing date part from \"{}\"", raw_date))
+fn to_midnight_utc(date: &NaiveDate) -> Result<DateTime<Utc>, String> {
+    date.and_hms_opt(0, 0, 0)
+        .ok_or_else(|| "Failed to set time to midnight".to_string())
+        .map(|dt| dt.and_utc())
+}
+
+fn calculate_weekday_offset(target: Weekday, offset_type: DateOffset, today: NaiveDate) -> NaiveDate {
+    let current = today.weekday() as i64;
+    let target = target as i64;
+
+    let delta = match offset_type {
+        DateOffset::Last => {
+            let mut d = (current - target) % 7;
+            if d <= 0 {
+                d += 7;
+            }
+            -d
+        }
+        DateOffset::Next => {
+            let mut d = (target - current) % 7;
+            if d <= 0 {
+                d += 7;
+            }
+            d
+        }
+    };
+
+    today + Duration::days(delta)
 }
 
 fn parse_weekday_name(s: &str) -> Option<Weekday> {

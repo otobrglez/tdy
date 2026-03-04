@@ -1,9 +1,9 @@
+use crate::constants::DATE_FORMAT;
 use chrono::{DateTime, Utc};
 
 pub trait DateFmtExt {
     fn ymd(&self) -> String;
 }
-const DATE_FORMAT: &str = "%Y-%m-%d";
 
 impl DateFmtExt for DateTime<Utc> {
     fn ymd(&self) -> String {

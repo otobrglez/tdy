@@ -1,28 +1,17 @@
 use crate::document::Document;
-use crate::ext::DateFmtExt;
+use crate::editor;
+use crate::error::Result;
+use crate::file_ops;
 use chrono::{DateTime, Utc};
 use log::info;
-use minijinja::{Environment as MinininjaEnvironment, context};
-use std::env::temp_dir;
-use std::fs::{File, copy as fs_copy, create_dir_all};
-use std::io::Write;
 use std::path::PathBuf;
-use std::process::Command;
-
-const DEFAULT_TEMPLATE_NAME: &str = "tdy.md";
-const DEFAULT_TEMPLATE: &str = "---\n\
-    date: {{ date }}\n\
-    ---\n\
-    # {{ title }}\n";
 
 pub fn resolve_path(
     tdy_files: PathBuf,
     namespace: String,
     date: Option<DateTime<Utc>>,
 ) -> Option<PathBuf> {
-    let document = Document::new(namespace, None, date);
-    let seek_path: PathBuf = tdy_files.join(document.file_name());
-    seek_path.try_exists().map(|_| seek_path).ok()
+    file_ops::resolve_path(tdy_files, namespace, date)
 }
 
 pub fn execute(
@@ -31,70 +20,153 @@ pub fn execute(
     namespace: String,
     date: Option<DateTime<Utc>>,
     title: Option<String>,
-) {
+) -> Result<()> {
     let document = Document::new(namespace, title, date);
-    let seek_path: PathBuf = tdy_files.join(document.file_name());
+    let destination_path = tdy_files.join(document.file_name());
 
-    let (new_document, working_document_path) = match seek_path.exists() {
-        false => create_temp_document(document).map(|p| (true, p)),
-        _ => Ok((false, seek_path.clone())),
+    if destination_path.exists() {
+        info!("Opening existing document: {}", destination_path.display());
+        editor::open_with_editor(&editor, &destination_path)?;
+    } else {
+        info!("Creating new document: {}", destination_path.display());
+        let temp_file = file_ops::create_temp_document(&document)?;
+        let temp_path = temp_file.path();
+
+        editor::open_with_editor(&editor, temp_path)?;
+        file_ops::save_document(temp_path, &destination_path)?;
     }
-    .expect("Failed creating new working document.");
-    open_document_with_editor(editor, new_document, seek_path, working_document_path);
+
+    Ok(())
 }
 
-fn create_temp_document(document: Document) -> Result<PathBuf, String> {
-    let mut template_environment = MinininjaEnvironment::new();
-    template_environment
-        .add_template(DEFAULT_TEMPLATE_NAME, DEFAULT_TEMPLATE)
-        .unwrap();
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use chrono::{TimeZone, Utc};
+    use std::fs;
+    use tempfile::tempdir;
 
-    info!(
-        "Using date: {:?} and title:{:?}",
-        document.date, document.title
-    );
+    #[test]
+    fn test_resolve_path_delegates_to_file_ops() {
+        let temp_dir = tempdir().unwrap();
+        let namespace = "test";
+        let date = Utc.with_ymd_and_hms(2025, 12, 31, 0, 0, 0).unwrap();
 
-    let temp_content = template_environment
-        .get_template(DEFAULT_TEMPLATE_NAME)
-        .unwrap()
-        .render(context!(
-            namespace => document.namespace,
-            title => document.title,
-            year => document.date.format("%Y").to_string(),
-            month => document.date.format("%m").to_string(),
-            day => document.date.format("%d").to_string(),
-            date => document.date.ymd()
-        ))
-        .unwrap();
+        let doc = Document::new(namespace, None, Some(date));
+        let file_path = temp_dir.path().join(doc.file_name());
+        fs::write(&file_path, "test").unwrap();
 
-    let mut dir: PathBuf = temp_dir();
-    dir.push(document.file_name());
-    let temp_file_name = dir.clone().to_str().unwrap().to_string();
-    let mut file = File::create(dir).unwrap();
-    file.write_all(temp_content.as_bytes()).unwrap();
-    Ok(PathBuf::from(temp_file_name))
-}
+        let result = resolve_path(temp_dir.path().to_path_buf(), namespace.to_string(), Some(date));
 
-fn open_document_with_editor(
-    editor: String,
-    new_document: bool,
-    seek_path: PathBuf,
-    working_document_path: PathBuf,
-) {
-    let status = Command::new(&editor)
-        .arg(&working_document_path)
-        .status()
-        .expect("Error: Failed to start the editor process.");
+        assert!(result.is_some());
+        assert_eq!(result.unwrap(), file_path);
+    }
 
-    // Copy the file from temp to files when the editor exits successfully
-    if status.success() && new_document {
-        info!("Written to {}", working_document_path.display());
-        if let Some(parent) = seek_path.parent() {
-            create_dir_all(parent).unwrap();
-        }
-        info!("Copying to {}", seek_path.to_str().unwrap());
-        fs_copy(&working_document_path, &seek_path).unwrap();
-    } else if status.success() && !new_document {
-        info!("Saved to {}", working_document_path.display());
+    #[test]
+    fn test_resolve_path_returns_none_for_missing_file() {
+        let temp_dir = tempdir().unwrap();
+        let result = resolve_path(
+            temp_dir.path().to_path_buf(),
+            "nonexistent".to_string(),
+            Some(Utc::now()),
+        );
+        assert!(result.is_none());
+    }
+
+    #[test]
+    fn test_execute_with_mock_editor_creates_new_file() {
+        let temp_dir = tempdir().unwrap();
+        let date = Utc.with_ymd_and_hms(2025, 12, 31, 0, 0, 0).unwrap();
+        let mock_editor = "true";
+
+        let result = execute(
+            mock_editor.to_string(),
+            temp_dir.path().to_path_buf(),
+            "test".to_string(),
+            Some(date),
+            Some("Test Title".to_string()),
+        );
+
+        assert!(result.is_ok());
+        let expected_file = temp_dir.path().join("test-2025-12-31.md");
+        assert!(expected_file.exists());
+
+        let content = fs::read_to_string(&expected_file).unwrap();
+        assert!(content.contains("date: 2025-12-31"));
+        assert!(content.contains("# Test Title"));
+    }
+
+    #[test]
+    fn test_execute_with_mock_editor_opens_existing_file() {
+        let temp_dir = tempdir().unwrap();
+        let date = Utc.with_ymd_and_hms(2025, 12, 31, 0, 0, 0).unwrap();
+        let file_path = temp_dir.path().join("work-2025-12-31.md");
+        fs::write(&file_path, "existing content").unwrap();
+
+        let mock_editor = "true";
+
+        let result = execute(
+            mock_editor.to_string(),
+            temp_dir.path().to_path_buf(),
+            "work".to_string(),
+            Some(date),
+            None,
+        );
+
+        assert!(result.is_ok());
+        assert!(file_path.exists());
+    }
+
+    #[test]
+    fn test_execute_with_invalid_editor_returns_error() {
+        let temp_dir = tempdir().unwrap();
+        let date = Utc.with_ymd_and_hms(2025, 12, 31, 0, 0, 0).unwrap();
+
+        let result = execute(
+            "nonexistent_editor_12345".to_string(),
+            temp_dir.path().to_path_buf(),
+            "test".to_string(),
+            Some(date),
+            None,
+        );
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_execute_creates_directory_structure() {
+        let temp_dir = tempdir().unwrap();
+        let nested_dir = temp_dir.path().join("nested").join("dirs");
+        let date = Utc.with_ymd_and_hms(2025, 1, 15, 0, 0, 0).unwrap();
+
+        let result = execute(
+            "true".to_string(),
+            nested_dir.clone(),
+            "project".to_string(),
+            Some(date),
+            Some("Planning".to_string()),
+        );
+
+        assert!(result.is_ok());
+        let expected_file = nested_dir.join("project-2025-01-15.md");
+        assert!(expected_file.exists());
+    }
+
+    #[test]
+    fn test_execute_with_default_namespace() {
+        let temp_dir = tempdir().unwrap();
+        let date = Utc.with_ymd_and_hms(2025, 3, 10, 0, 0, 0).unwrap();
+
+        let result = execute(
+            "true".to_string(),
+            temp_dir.path().to_path_buf(),
+            "".to_string(),
+            Some(date),
+            None,
+        );
+
+        assert!(result.is_ok());
+        let expected_file = temp_dir.path().join("tdy-2025-03-10.md");
+        assert!(expected_file.exists());
     }
 }

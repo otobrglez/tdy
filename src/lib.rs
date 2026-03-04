@@ -1,4 +1,9 @@
 pub mod cli_date;
+pub mod constants;
 pub mod document;
+pub mod editor;
+pub mod error;
 pub mod ext;
+pub mod file_ops;
 pub mod open_create;
+pub mod template;

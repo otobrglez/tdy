@@ -1,5 +1,7 @@
 # `tdy` - a very opinionated day tracker
 
+[![Build](https://github.com/otobrglez/tdy/actions/workflows/build.yml/badge.svg)](https://github.com/otobrglez/tdy/actions/workflows/build.yml)
+
 `tdy` is a tool for writing and organising daily notes.
 
 ## Rules

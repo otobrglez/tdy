@@ -1,3 +1,4 @@
+use crate::constants::DEFAULT_NAMESPACE;
 use crate::ext::DateFmtExt;
 use chrono::{DateTime, Utc};
 
@@ -9,40 +10,71 @@ pub struct Document {
 }
 
 impl Document {
-    const DEFAULT_NAMESPACE: &str = "tdy";
-
     pub fn new(
-        namespace: String,
+        namespace: impl Into<String>,
         title: Option<String>,
-        maybe_date: Option<DateTime<Utc>>,
-    ) -> Document {
+        date: Option<DateTime<Utc>>,
+    ) -> Self {
+        let namespace = namespace.into();
+        let namespace = if namespace.is_empty() {
+            DEFAULT_NAMESPACE.to_string()
+        } else {
+            namespace
+        };
+
+        let date = date.unwrap_or_else(Utc::now);
+        let title = title
+            .filter(|s| !s.trim().is_empty())
+            .or_else(|| Some(date.ymd()));
+
         Document {
-            namespace: Self::namespace_or_default(namespace),
-            title: Self::title_or_default(title, maybe_date),
-            date: Self::date_or_now(maybe_date),
+            namespace,
+            title,
+            date,
         }
-    }
-
-    fn namespace_or_default(namespace: String) -> String {
-        Some(namespace)
-            .filter(|s| !s.is_empty())
-            .unwrap_or_else(|| String::from(Self::DEFAULT_NAMESPACE))
-    }
-
-    fn title_or_default(
-        title: Option<String>,
-        maybe_date: Option<DateTime<Utc>>,
-    ) -> Option<String> {
-        title
-            .and_then(|s| if s.trim().is_empty() { None } else { Some(s) })
-            .or_else(|| Some(maybe_date.unwrap_or_else(Utc::now).ymd()))
-    }
-
-    fn date_or_now(date: Option<DateTime<Utc>>) -> DateTime<Utc> {
-        date.unwrap_or(Utc::now())
     }
 
     pub fn file_name(&self) -> String {
         format!("{}-{}.md", self.namespace, self.date.ymd())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use chrono::TimeZone;
+
+    #[test]
+    fn test_document_new_with_defaults() {
+        let doc = Document::new("test", None, None);
+        assert_eq!(doc.namespace, "test");
+        assert!(doc.title.is_some());
+    }
+
+    #[test]
+    fn test_document_empty_namespace_uses_default() {
+        let doc = Document::new("", None, None);
+        assert_eq!(doc.namespace, DEFAULT_NAMESPACE);
+    }
+
+    #[test]
+    fn test_document_with_custom_title() {
+        let doc = Document::new("work", Some("Meeting Notes".to_string()), None);
+        assert_eq!(doc.namespace, "work");
+        assert_eq!(doc.title, Some("Meeting Notes".to_string()));
+    }
+
+    #[test]
+    fn test_document_whitespace_title_ignored() {
+        let doc = Document::new("work", Some("   ".to_string()), None);
+        assert!(doc.title.is_some());
+        assert_ne!(doc.title, Some("   ".to_string()));
+    }
+
+    #[test]
+    fn test_document_file_name() {
+        let date = Utc.with_ymd_and_hms(2025, 12, 31, 0, 0, 0).unwrap();
+        let doc = Document::new("test", None, Some(date));
+        assert_eq!(doc.file_name(), "test-2025-12-31.md");
     }
 }

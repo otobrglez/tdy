@@ -1,7 +1,6 @@
-use std::path::PathBuf;
-
 use chrono::{DateTime, Utc};
 use clap::{Parser, Subcommand};
+use std::path::PathBuf;
 use tdy::{cli_date, open_create};
 
 #[derive(Parser)]
@@ -34,12 +33,19 @@ enum Commands {
         date: Option<DateTime<Utc>>,
         #[arg(long, env, default_value = ".days")]
         tdy_files: PathBuf,
-    }
+    },
 }
 
 fn main() {
     env_logger::init();
 
+    if let Err(e) = run() {
+        eprintln!("Error: {}", e);
+        std::process::exit(1);
+    }
+}
+
+fn run() -> Result<(), Box<dyn std::error::Error>> {
     match TdyCli::parse().command {
         Commands::Open {
             editor,
@@ -47,7 +53,9 @@ fn main() {
             namespace,
             date,
             title,
-        } => open_create::execute(editor, tdy_files, namespace, date, title),
+        } => {
+            open_create::execute(editor, tdy_files, namespace, date, title)?;
+        }
         Commands::Path {
             namespace,
             date,
@@ -58,4 +66,5 @@ fn main() {
             }
         }
     }
+    Ok(())
 }
