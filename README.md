@@ -4,14 +4,14 @@
 
 `tdy` is a tool for writing and organising daily notes.
 
-## Rules
+## Rules and principles
 
 1. One day, one file.
-2. Respect and use `$EDITOR`.
-3. Use `namespaces` for multiple projects in a person's life.
+2. Use `namespaces` for multiple projects in a person's life.
+3. Bring-your-own editor. Respect and use `$EDITOR`.
 4. Quick, and non-invasive. **Then smart.**
-5. Cloud-ready and cloud-optional!
-6. Use [Markdown](https://www.markdownguide.org/).
+5. Use [Markdown](https://www.markdownguide.org/).
+6. Cloud-ready and cloud-optional!
 
 ## Usage
 
