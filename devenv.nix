@@ -34,7 +34,7 @@
   languages.rust = {
     enable = true;
     channel = "stable";
-    version = "1.91.1";
+    version = "1.95.0";
   };
 
   enterShell = ''
