@@ -1,6 +1,4 @@
-# EditorConfig helps developers define and maintain consistent
-# coding styles between different editors and IDEs
-# editorconfig.org
+# EditorConfig: https://editorconfig.org
 
 root = true
 
@@ -8,18 +6,7 @@ root = true
 end_of_line = lf
 charset = utf-8
 insert_final_newline = true
-
-# some tests need trailing whitespace in output snapshots
-[!tests/]
 trim_trailing_whitespace = true
-# for actual source code files of test, we still don't want trailing whitespace
-[tests/**.{rs,js}]
-trim_trailing_whitespace = true
-# these specific source files need to have trailing whitespace.
-[tests/ui/{frontmatter/frontmatter-whitespace-3.rs,parser/shebang/shebang-space.rs}]
-trim_trailing_whitespace = false
-
-[!src/llvm-project]
 indent_style = space
 indent_size = 4
 
@@ -27,12 +14,8 @@ indent_size = 4
 max_line_length = 100
 
 [*.md]
-# double whitespace at end of line
-# denotes a line break in Markdown
+# Two trailing spaces denote a line break in Markdown.
 trim_trailing_whitespace = false
 
-[*.yml]
+[*.{yml,yaml,nix}]
 indent_size = 2
-
-[Makefile]
-indent_style = tab

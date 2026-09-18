@@ -1,11 +1,11 @@
 [package]
 name = "tdy"
-version = "0.0.7"
+version = "0.0.8"
 edition = "2024"
 authors = ["Oto Brglez <otobrglez@gmail.com>"]
 
 [dependencies]
-chrono = "0.4.44"
+chrono = "0.4.45"
 clap = { version = "4.6.1", features = ["derive", "env"] }
 env_logger = "0.11.10"
 log = "0.4.29"

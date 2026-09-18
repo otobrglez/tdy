@@ -1,6 +1,8 @@
+# Generated notes and exports
 *.pdf
 *.html
 *.md
+!README.md
 
 # Data
 .days/

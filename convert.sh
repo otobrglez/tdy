@@ -1,44 +1,33 @@
 #!/usr/bin/env bash
-set -ex
+# Converts a Markdown note to PDF with pandoc and xelatex.
+#
+# Usage: ./convert.sh <input.md> <output.pdf>
+#
+# The font defaults to Inconsolata. Override it with TDY_FONT, for example:
+#   TDY_FONT="Noto Sans" ./convert.sh notes.md notes.pdf
+set -euo pipefail
+
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 <input.md> <output.pdf>" >&2
+    exit 1
+fi
 
 from_file=$1
 to_file=$2
+font=${TDY_FONT:-inconsolata}
+fallback_fonts="FallbackFonts={Noto Color Emoji,Noto Emoji,DejaVu Sans,Symbola}"
 
-font_0="inconsolata"
-font_1="Palatino"
-font_2="Menlo"
-font_3="Helvetica"
-font_4="Noto Sans"
-
-font=$font_0
-mainfont=$font
-sansfont=$font
-monofont=$font
-
-pandoc $from_file \
+pandoc "$from_file" \
     --pdf-engine=xelatex \
     --variable geometry:a4paper,margin=2cm \
-    -V papersize:a4 \
-    --variable mainfont="$mainfont" \
-    --variable sansfont="$sansfont" \
-    --variable monofont="$monofont" \
+    --variable papersize:a4 \
+    --variable mainfont="$font" \
+    --variable sansfont="$font" \
+    --variable monofont="$font" \
     --variable mathfont="STIX Two Math" \
-    --variable mainfontoptions="FallbackFonts={Noto Color Emoji,Noto Emoji,DejaVu Sans,Symbola}" \
-    --variable sansfontoptions="FallbackFonts={Noto Color Emoji,Noto Emoji,DejaVu Sans,Symbola}" \
-    --variable monofontoptions="FallbackFonts={Noto Color Emoji,Noto Emoji,DejaVu Sans,Symbola}" \
+    --variable mainfontoptions="$fallback_fonts" \
+    --variable sansfontoptions="$fallback_fonts" \
+    --variable monofontoptions="$fallback_fonts" \
     --variable fontsize=9pt \
     --variable version=2.0 \
-    -o $to_file
-
-# pandoc $from_file \
-#   --pdf-engine=lualatex \
-#   -V geometry:a4paper,margin=2cm \
-#   -V mainfont="Noto Sans" \
-#   -V sansfont="Noto Sans" \
-#   -V monofont="Inconsolata" \
-#   -V mathfont="STIX Two Math" \
-#   -V 'mainfontoptions=Renderer=Harfbuzz,FallbackFonts={Noto Color Emoji,Noto Emoji,DejaVu Sans}' \
-#   -V 'sansfontoptions=Renderer=Harfbuzz,FallbackFonts={Noto Color Emoji,Noto Emoji,DejaVu Sans}' \
-#   -V 'monofontoptions=Renderer=Harfbuzz,FallbackFonts={Noto Emoji,DejaVu Sans Mono}' \
-#   -V fontsize=10pt \
-# 	-o $to_file
+    -o "$to_file"

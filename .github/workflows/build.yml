@@ -15,5 +15,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+      - run: cargo fmt --check
+      - run: cargo clippy --all-targets -- -D warnings
       - run: cargo test -- --nocapture
-

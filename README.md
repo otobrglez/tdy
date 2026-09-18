@@ -21,21 +21,36 @@ tdy open
 
 **That's it.** Behind the scenes, `tdy` creates a new [Markdown](https://en.wikipedia.org/wiki/Markdown) document in a
 temporary folder with a simple pre-defined template. Boot up your favourite text editor and wait for you to finish.
-After the editor is closed, it stores the file in your file system's `$TDY_FILES` (`.tdy` - by default) folder.
+After the editor is closed, it stores the file in your file system's `$TDY_FILES` (`.days` - by default) folder. If the
+editor exits with an error, nothing is saved.
 
-`tdy` names files with the following template `<namespace>-<year>-<month>-<date>.md`.
+`tdy` names files with the following template `<namespace>-<YYYY>-<MM>-<DD>.md`. Dates are calendar dates in your
+local time zone.
 
-`tdy` respects your `ENV` and reads `EDITOR`, `TDY_FILES`, and `SHELL` respectfully.
+`tdy` respects your `ENV` and reads `EDITOR`, `TDY_FILES` and `NAMESPACE`.
+
+```
+Usage: tdy <COMMAND>
+
+Commands:
+  open  Open the document for a day in your editor, creating it if needed
+  path  Print the path of the document for a day, if it exists
+  help  Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help     Print help
+  -V, --version  Print version
+```
 
 ```
 Usage: tdy open [OPTIONS] --editor <EDITOR>
 
 Options:
-  -n, --namespace <NAMESPACE>  [env: NAMESPACE=] [default: tdy]
-  -t, --title <TITLE>
-  -d, --date <DATE>
-      --tdy-files <TDY_FILES>  [env: TDY_FILES=.days/] [default: .days]
-      --editor <EDITOR>        [env: EDITOR=nvim]
+  -n, --namespace <NAMESPACE>  Namespace that groups documents, for example `work` [env: NAMESPACE=] [default: tdy]
+  -d, --date <DATE>            Day of the document: `2025-12-31`, `today`, `yesterday`, `tomorrow`, `last friday` or `next monday` [default: today]
+      --tdy-files <TDY_FILES>  Directory where documents are stored [env: TDY_FILES=] [default: .days]
+  -t, --title <TITLE>          Heading of a newly created document [default: the date]
+      --editor <EDITOR>        Editor command used to open the document [env: EDITOR=]
   -h, --help                   Print help
   -V, --version                Print version
 ```
@@ -44,7 +59,7 @@ Options:
 
 Opens a new document for **today**. The file will have a name similar to `tdy-2025-09-02.md`. If the file does not
 exist, it will be created beforehand; otherwise, the existing file is opened for editing in your editor. The file is
-stored in the `./days` folder unless overwritten by `TDY_FILES` or by setting the flag `--tdy-files`.
+stored in the `.days` folder unless overwritten by `TDY_FILES` or by setting the flag `--tdy-files`.
 
 ```bash
 $ tdy open
@@ -74,27 +89,55 @@ The same works for next Monday.
 $ tdy open -n work -d "next monday" -t "Monday planning."
 ```
 
+### Finding a document
+
+`tdy path` prints the location of an existing document and prints nothing if there is none. It takes the same
+`--namespace`, `--date` and `--tdy-files` options as `tdy open`, which makes it handy in scripts.
+
+```bash
+$ tdy path -n work -d yesterday
+.days/work-2025-09-01.md
+
+$ cat "$(tdy path -n work -d yesterday)"
+```
+
 ## Default template
 
 If the file for the day does not yet exist, it will create a new file with the following Markdown template (with the
-current date-time!):
+current date, or the date you asked for):
 
 ```markdown
 ---
 date: 2023-06-17
 ---
-
 # 2023-06-17
+```
+
+## Export to PDF
+
+`convert.sh` turns a note into a PDF with [pandoc](https://pandoc.org/) and XeLaTeX. Both, together with the fonts it
+uses, are provided by the `devenv` shell.
+
+```bash
+./convert.sh .days/work-2025-09-01.md work-2025-09-01.pdf
 ```
 
 ## Development
 
-This is a Rust project. To compile it you need rust toolchain and then:
+This is a Rust project. To compile it you need a Rust toolchain (or run `devenv shell`) and then:
 
 ```bash
 cargo build
 cargo build --release
-./target/debug tdy open -n hacking
+./target/debug/tdy open -n hacking
+```
+
+CI runs the same checks you can run locally:
+
+```bash
+cargo fmt --check
+cargo clippy --all-targets -- -D warnings
+cargo test
 ```
 
 ## Author
