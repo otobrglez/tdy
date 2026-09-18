@@ -1,6 +1,7 @@
 # `tdy` - a very opinionated day tracker
 
 [![Build](https://github.com/otobrglez/tdy/actions/workflows/build.yml/badge.svg)](https://github.com/otobrglez/tdy/actions/workflows/build.yml)
+[![Release](https://github.com/otobrglez/tdy/actions/workflows/release.yml/badge.svg)](https://github.com/otobrglez/tdy/actions/workflows/release.yml)
 
 `tdy` is a tool for writing and organising daily notes.
 
@@ -12,6 +13,18 @@
 4. Quick, and non-invasive. **Then smart.**
 5. Use [Markdown](https://www.markdownguide.org/).
 6. Cloud-ready and cloud-optional!
+
+## Installation
+
+Pre-built binaries for macOS (Apple Silicon and Intel) and Linux (x86_64 and aarch64) are published on the
+[releases page](https://github.com/otobrglez/tdy/releases). The installer script picks the right one and puts `tdy`
+into `~/.cargo/bin`:
+
+```bash
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/otobrglez/tdy/releases/latest/download/tdy-installer.sh | sh
+```
+
+Or build from source with `cargo install --git https://github.com/otobrglez/tdy`.
 
 ## Usage
 
@@ -139,6 +152,20 @@ cargo fmt --check
 cargo clippy --all-targets -- -D warnings
 cargo test
 ```
+
+### Releasing
+
+Releases are built by [dist](https://opensource.axo.dev/cargo-dist/) (`cargo-dist`), which the `devenv` shell
+provides. Bump `version` in `Cargo.toml`, commit, and push a matching tag. The `Release` workflow then builds the
+macOS and Linux binaries and the installer, and publishes them as a GitHub release.
+
+```bash
+git tag v0.0.9
+git push origin v0.0.9
+```
+
+The release configuration lives in `dist-workspace.toml`. After changing it, run `dist generate` to refresh
+`.github/workflows/release.yml` and `dist plan` to check the result.
 
 ## Author
 

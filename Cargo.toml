@@ -3,6 +3,7 @@ name = "tdy"
 version = "0.0.8"
 edition = "2024"
 authors = ["Oto Brglez <otobrglez@gmail.com>"]
+repository = "https://github.com/otobrglez/tdy"
 
 [dependencies]
 chrono = "0.4.45"
@@ -18,3 +19,7 @@ lto = true
 opt-level = 3
 panic = "abort"
 strip = true
+
+# The profile that 'dist' builds release artifacts with; identical to `release`.
+[profile.dist]
+inherits = "release"
