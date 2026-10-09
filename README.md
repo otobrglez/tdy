@@ -61,6 +61,7 @@ Usage: tdy open [OPTIONS] --editor <EDITOR>
 Options:
   -n, --namespace <NAMESPACE>  Namespace that groups documents, for example `work` [env: NAMESPACE=] [default: tdy]
   -d, --date <DATE>            Day of the document: `2025-12-31`, `today`, `yesterday`, `tomorrow`, `last friday` or `next monday` [default: today]
+  -l, --last                   Use the most recent existing document, up to and including today
       --tdy-files <TDY_FILES>  Directory where documents are stored [env: TDY_FILES=] [default: .days]
   -t, --title <TITLE>          Heading of a newly created document [default: the date]
       --editor <EDITOR>        Editor command used to open the document [env: EDITOR=]
@@ -102,10 +103,17 @@ The same works for next Monday.
 $ tdy open -n work -d "next monday" -t "Monday planning."
 ```
 
+Open the most recent existing document in the `work` namespace, whatever day it was written. Documents dated in the
+future are skipped. It can't be combined with `--date`.
+
+```bash
+$ tdy open -n work --last
+```
+
 ### Finding a document
 
 `tdy path` prints the location of an existing document and prints nothing if there is none. It takes the same
-`--namespace`, `--date` and `--tdy-files` options as `tdy open`, which makes it handy in scripts.
+`--namespace`, `--date`, `--last` and `--tdy-files` options as `tdy open`, which makes it handy in scripts.
 
 ```bash
 $ tdy path -n work -d yesterday

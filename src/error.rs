@@ -7,6 +7,7 @@ pub enum TdyError {
     Io(io::Error),
     Template(minijinja::Error),
     EditorFailed(String),
+    NoDocuments(String),
 }
 
 impl fmt::Display for TdyError {
@@ -15,6 +16,9 @@ impl fmt::Display for TdyError {
             TdyError::Io(err) => write!(f, "IO error: {err}"),
             TdyError::Template(err) => write!(f, "Template error: {err}"),
             TdyError::EditorFailed(msg) => write!(f, "Editor error: {msg}"),
+            TdyError::NoDocuments(namespace) => {
+                write!(f, "No documents found in namespace '{namespace}'")
+            }
         }
     }
 }
@@ -24,7 +28,7 @@ impl Error for TdyError {
         match self {
             TdyError::Io(err) => Some(err),
             TdyError::Template(err) => Some(err),
-            TdyError::EditorFailed(_) => None,
+            TdyError::EditorFailed(_) | TdyError::NoDocuments(_) => None,
         }
     }
 }
