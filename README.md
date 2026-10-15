@@ -40,7 +40,7 @@ editor exits with an error, nothing is saved.
 `tdy` names files with the following template `<namespace>-<YYYY>-<MM>-<DD>.md`. Dates are calendar dates in your
 local time zone.
 
-`tdy` respects your `ENV` and reads `EDITOR`, `TDY_FILES` and `NAMESPACE`.
+`tdy` respects your `ENV` and reads `VISUAL`, `EDITOR`, `TDY_FILES`, and `TDY_NAMESPACE` (falling back to `NAMESPACE`). If no editor is specified or set in environment variables, `tdy` automatically detects common editors (`nano`, `vim`, `vi`). Editor commands can include arguments (such as `code --wait`).
 
 ```
 Usage: tdy <COMMAND>
@@ -56,11 +56,11 @@ Options:
 ```
 
 ```
-Usage: tdy open [OPTIONS] --editor <EDITOR>
+Usage: tdy open [OPTIONS]
 
 Options:
-  -n, --namespace <NAMESPACE>  Namespace that groups documents, for example `work` [env: NAMESPACE=] [default: tdy]
-  -d, --date <DATE>            Day of the document: `2025-12-31`, `today`, `yesterday`, `tomorrow`, `last friday` or `next monday` [default: today]
+  -n, --namespace <NAMESPACE>  Namespace that groups documents, for example `work` [env: TDY_NAMESPACE=, NAMESPACE=] [default: tdy]
+  -d, --date <DATE>            Day of the document: `YYYY-MM-DD`, `today`, `yesterday`, `tomorrow`, `friday`, `this friday`, `last friday`, `next monday`, `+1`, `-2`, `2 days ago`, `in 3 days` [default: today]
   -l, --last                   Use the most recent existing document, up to and including today
       --tdy-files <TDY_FILES>  Directory where documents are stored [env: TDY_FILES=] [default: .days]
   -t, --title <TITLE>          Heading of a newly created document [default: the date]

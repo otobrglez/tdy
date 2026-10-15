@@ -7,9 +7,10 @@ pub fn today() -> NaiveDate {
     Local::now().date_naive()
 }
 
-/// Parses a CLI date argument. Accepts an absolute `YYYY-MM-DD` date or one of
-/// the relative forms `today`, `yesterday`, `tomorrow`, `last <weekday>` and
-/// `next <weekday>`.
+/// Parses a CLI date argument. Accepts an absolute `YYYY-MM-DD` date,
+/// relative offsets (`+1`, `-2`, `+3d`, `2 days ago`, `in 3 days`), or relative
+/// forms (`today`, `yesterday`, `tomorrow`, `<weekday>`, `this <weekday>`,
+/// `last <weekday>`, `next <weekday>`).
 pub fn parse_raw_date(raw: &str) -> Result<NaiveDate, String> {
     parse_relative_to(raw, today())
 }
@@ -20,19 +21,58 @@ fn parse_relative_to(raw: &str, today: NaiveDate) -> Result<NaiveDate, String> {
         return Ok(date);
     }
 
+    if (normalized.starts_with('+') || normalized.starts_with('-'))
+        && let Some(offset) = parse_offset(&normalized)
+    {
+        return Ok(today + Duration::days(offset));
+    }
+
     let parts: Vec<&str> = normalized.split_whitespace().collect();
     match parts.as_slice() {
         ["today"] => Ok(today),
         ["yesterday"] => Ok(today - Duration::days(1)),
         ["tomorrow"] => Ok(today + Duration::days(1)),
+        [weekday] if parse_weekday(weekday).is_some() => {
+            let target = parse_weekday(weekday).unwrap();
+            if today.weekday() == target {
+                Ok(today)
+            } else {
+                Ok(shift_to_weekday(today, target, Direction::Next))
+            }
+        }
+        ["this", weekday] => {
+            let target = parse_weekday(weekday).ok_or_else(|| invalid(raw))?;
+            if today.weekday() == target {
+                Ok(today)
+            } else {
+                Ok(shift_to_weekday(today, target, Direction::Next))
+            }
+        }
         ["last", weekday] => parse_weekday(weekday)
             .map(|target| shift_to_weekday(today, target, Direction::Last))
             .ok_or_else(|| invalid(raw)),
         ["next", weekday] => parse_weekday(weekday)
             .map(|target| shift_to_weekday(today, target, Direction::Next))
             .ok_or_else(|| invalid(raw)),
+        [count, "day" | "days", "ago"] => count
+            .parse::<i64>()
+            .map(|n| today - Duration::days(n))
+            .map_err(|_| invalid(raw)),
+        ["in", count, "day" | "days"] => count
+            .parse::<i64>()
+            .map(|n| today + Duration::days(n))
+            .map_err(|_| invalid(raw)),
         _ => Err(invalid(raw)),
     }
+}
+
+fn parse_offset(raw: &str) -> Option<i64> {
+    let trimmed = raw
+        .strip_suffix("days")
+        .or_else(|| raw.strip_suffix("day"))
+        .or_else(|| raw.strip_suffix('d'))
+        .unwrap_or(raw);
+    trimmed.parse::<i64>().ok()
 }
 
 fn invalid(raw: &str) -> String {
@@ -162,14 +202,46 @@ mod tests {
     }
 
     #[test]
+    fn bare_and_this_weekday() {
+        let today = wednesday(); // 2025-12-31 is Wednesday
+        assert_eq!(parse_relative_to("wednesday", today), Ok(today));
+        assert_eq!(parse_relative_to("this wednesday", today), Ok(today));
+        assert_eq!(parse_relative_to("wed", today), Ok(today));
+        assert_eq!(parse_relative_to("friday", today), Ok(ymd(2026, 1, 2)));
+        assert_eq!(parse_relative_to("this friday", today), Ok(ymd(2026, 1, 2)));
+        assert_eq!(parse_relative_to("fri", today), Ok(ymd(2026, 1, 2)));
+        assert_eq!(parse_relative_to("monday", today), Ok(ymd(2026, 1, 5)));
+        assert_eq!(parse_relative_to("this mon", today), Ok(ymd(2026, 1, 5)));
+    }
+
+    #[test]
+    fn offset_days() {
+        let today = wednesday();
+        assert_eq!(parse_relative_to("+1", today), Ok(ymd(2026, 1, 1)));
+        assert_eq!(parse_relative_to("-1", today), Ok(ymd(2025, 12, 30)));
+        assert_eq!(parse_relative_to("+2d", today), Ok(ymd(2026, 1, 2)));
+        assert_eq!(parse_relative_to("-3days", today), Ok(ymd(2025, 12, 28)));
+        assert_eq!(parse_relative_to("1 day ago", today), Ok(ymd(2025, 12, 30)));
+        assert_eq!(
+            parse_relative_to("2 days ago", today),
+            Ok(ymd(2025, 12, 29))
+        );
+        assert_eq!(parse_relative_to("in 1 day", today), Ok(ymd(2026, 1, 1)));
+        assert_eq!(parse_relative_to("in 3 days", today), Ok(ymd(2026, 1, 3)));
+    }
+
+    #[test]
     fn invalid_date() {
         for input in [
             "",
             "invalid",
             "2024-13-01",
             "last invalid",
+            "this invalid",
             "next",
             "last monday tuesday",
+            "in invalid days",
+            "foo days ago",
         ] {
             assert!(parse_raw_date(input).is_err(), "{input:?} should not parse");
         }
