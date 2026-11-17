@@ -168,8 +168,8 @@ provides. Bump `version` in `Cargo.toml`, commit, and push a matching tag. The `
 macOS and Linux binaries and the installer, and publishes them as a GitHub release.
 
 ```bash
-git tag v0.0.9
-git push origin v0.0.9
+git tag v0.0.12
+git push origin v0.0.12
 ```
 
 The release configuration lives in `dist-workspace.toml`. After changing it, run `dist generate` to refresh

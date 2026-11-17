@@ -38,7 +38,7 @@
   languages.rust = {
     enable = true;
     channel = "stable";
-    version = "1.99.0";
+    version = "1.100.0";
     lsp.enable = true;
   };
 
